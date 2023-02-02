@@ -1,0 +1,21 @@
+body {
+    margin: auto;
+    width: 51%;
+    border: 1px solid rgb(67, 204, 67);
+    padding: 33px;
+    background: rgb(196, 174, 238);
+background: radial-gradient(circle, rgba(238,174,202,1) 0%, rgba(148,187,233,1) 100%);
+  }
+
+  h1 {
+    color: rgb(46, 48, 49);
+    text-align: center;
+  }
+
+  div {
+    
+    background-color: rgba(0, 0, 0, 0.5);
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    color: aliceblue;
+
+  }
