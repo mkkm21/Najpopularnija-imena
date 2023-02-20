@@ -61,7 +61,7 @@ d3.csv("https://raw.githubusercontent.com/mkkm21/podaci/main/podaci").then( func
     .call(d3.axisLeft(y).ticks(5))
 
 
-  // Add a clipPath: everything out of this area won't be drawn.
+  // Dodavanje clipPath: van ove oblasti neće biti nacrtano
   const clip = svg.append("defs").append("svg:clipPath")
       .attr("id", "clip")
       .append("svg:rect")
@@ -70,22 +70,22 @@ d3.csv("https://raw.githubusercontent.com/mkkm21/podaci/main/podaci").then( func
       .attr("x", 0)
       .attr("y", 0);
 
-  // Add brushing
-  const brush = d3.brushX()                 // Add the brush feature using the d3.brush function
-      .extent( [ [0,0], [width,height] ] ) // initialise the brush area: start at 0,0 and finishes at width,height: it means I select the whole graph area
-      .on("end", updateChart) // Each time the brush selection changes, trigger the 'updateChart' function
+  // Dodavanje brushing-a
+  const brush = d3.brushX()                 // Dodavanje brush opcije koristeći d3.brush funkciju
+      .extent( [ [0,0], [width,height] ] ) // inicijalizacija brush oblasti: početak od 0,0 i kraj do širine, visine: to znači da je selektovana cela površina grafika
+      .on("end", updateChart) // Svaki put kad je brush selekcija izmenjena, upotrebi 'updateChart' funkciju
 
-  // Create the scatter variable: where both the circles and the brush take place
+  // Kreiraj "scatter" promenljivu: Gde su zajedno nalaze i kružići i brush
   const areaChart = svg.append('g')
     .attr("clip-path", "url(#clip)")
 
-  // Area generator
+  // Pravljenje površine
   const area = d3.area()
     .x(function(d) { return x(d.data.year); })
     .y0(function(d) { return y(d[0]); })
     .y1(function(d) { return y(d[1]); })
 
-  // Show the areas
+  // Prikaz površina
   areaChart
     .selectAll("mylayers")
     .data(stackedData)
@@ -94,7 +94,7 @@ d3.csv("https://raw.githubusercontent.com/mkkm21/podaci/main/podaci").then( func
       .style("fill", function(d) { return color(d.key); })
       .attr("d", area)
 
-  // Add the brushing
+  // Dodavanje brushing-a
   areaChart
     .append("g")
       .attr("class", "brush")
@@ -103,21 +103,21 @@ d3.csv("https://raw.githubusercontent.com/mkkm21/podaci/main/podaci").then( func
   let idleTimeout
   function idled() { idleTimeout = null; }
 
-  // A function that update the chart for given boundaries
+  // Funkcija koja osvežava prikaz grafika nakon zadatih granica
   function updateChart(event,d) {
 
     extent = event.selection
 
-    // If no selection, back to initial coordinate. Otherwise, update X axis domain
+    // Ako nije selektovano, vrati se u početne koordinate. Suprotno, osveži domen x ose.
     if(!extent){
-      if (!idleTimeout) return idleTimeout = setTimeout(idled, 350); // This allows to wait a little bit
+      if (!idleTimeout) return idleTimeout = setTimeout(idled, 350); // Omogućava da sačekamo malo.
       x.domain(d3.extent(data, function(d) { return d.year; }))
     }else{
       x.domain([ x.invert(extent[0]), x.invert(extent[1]) ])
-      areaChart.select(".brush").call(brush.move, null) // This remove the grey brush area as soon as the selection has been done
+      areaChart.select(".brush").call(brush.move, null) // Ovo omogućava uklanjanje sivog brush-a čim je selektovan deo grafika.
     }
 
-    // Update axis and area position
+    // Osvežava osu i položaj na površini
     xAxis.transition().duration(1000).call(d3.axisBottom(x).ticks(5))
     areaChart
       .selectAll("path")
@@ -126,49 +126,39 @@ d3.csv("https://raw.githubusercontent.com/mkkm21/podaci/main/podaci").then( func
     }
 
 
-
-    //////////
-    // HIGHLIGHT GROUP //
-    //////////
-
-    // What to do when one group is hovered
+    // Ponašanje grafika kad se pređe mišem preko neke grupe
     const highlight = function(event,d){
-      // reduce opacity of all groups
+      // smanjuje jačinu boje ostalih grupa
       d3.selectAll(".myArea").style("opacity", .1)
-      // expect the one that is hovered
+      // prikaz grupe nad kojom je miš trenutno
       d3.select("."+d).style("opacity", 1)
     }
 
-    // And when it is not hovered anymore
+    // Prikaz kad se miš pomeri, vraća u normalan režim
     const noHighlight = function(event,d){
       d3.selectAll(".myArea").style("opacity", 1)
     }
 
 
-
-    //////////
-    // LEGEND //
-    //////////
-
-    // Add one dot in the legend for each name.
+    // Dodaj po jednu tačku za svako ime u legendi.
     const size = 20
     svg.selectAll("myrect")
       .data(keys)
       .join("rect")
         .attr("x", 400)
-        .attr("y", function(d,i){ return 10 + i*(size+5)}) // 100 is where the first dot appears. 25 is the distance between dots
+        .attr("y", function(d,i){ return 10 + i*(size+5)}) // Prva tačka se pojavljuje na 100. Razmak između svake tačke iznosi 25.
         .attr("width", size)
         .attr("height", size)
         .style("fill", function(d){ return color(d)})
         .on("mouseover", highlight)
         .on("mouseleave", noHighlight)
 
-    // Add one dot in the legend for each name.
+    // Dodaj po jednu tačku za svako ime u legendi
     svg.selectAll("mylabels")
       .data(keys)
       .join("text")
         .attr("x", 400 + size*1.2)
-        .attr("y", function(d,i){ return 10 + i*(size+5) + (size/2)}) // 100 is where the first dot appears. 25 is the distance between dots
+        .attr("y", function(d,i){ return 10 + i*(size+5) + (size/2)}) // Prva tačka se pojavljuje na 100. Razmak između svake tačke iznosi 25.
         .style("fill", function(d){ return color(d)})
         .text(function(d){ return d})
         .attr("text-anchor", "left")
