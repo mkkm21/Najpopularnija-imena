@@ -16,15 +16,15 @@ const svg = d3.select("#my_dataviz")
 d3.csv("https://raw.githubusercontent.com/mkkm21/podaci/main/podaci").then( function(data) {
 
 
-  // List of groups = header of the csv files
+  // Lista grupe = header csv fajla
   const keys = data.columns.slice(1)
 
-  // color palette
+  // Paleta boje
   const color = d3.scaleOrdinal()
     .domain(keys)
     .range(d3.schemeSet2);
 
-  //stack the data?
+  // Poređaj podatke
   const stackedData = d3.stack()
     .keys(keys)
     (data)
